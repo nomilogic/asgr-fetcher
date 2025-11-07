@@ -148,7 +148,7 @@ async function uploadIfNeeded(bucket: string, filePath: string, data: Buffer, co
     search: path.basename(filePath),
   });
   if (existing && existing.some((f) => f.name === path.basename(filePath))) {
-    return { path: filePath, alreadyExisted: true } as const;
+    return { path: path.posix.join(path.dirname(filePath), path.basename(filePath)), alreadyExisted: true } as const;
   }
 
   const { data: uploaded, error } = await supabase.storage
@@ -156,6 +156,73 @@ async function uploadIfNeeded(bucket: string, filePath: string, data: Buffer, co
     .upload(filePath, data, { contentType, upsert: false });
   if (error) throw error;
   return { path: uploaded?.path ?? filePath, alreadyExisted: false } as const;
+}
+
+async function ensureHighSchoolId(school?: string): Promise<number | undefined> {
+  if (!school) return undefined;
+  const { data: existing } = await supabase
+    .from("high_schools")
+    .select("id")
+    .eq("school", school)
+    .maybeSingle();
+  if (existing?.id) return existing.id as number;
+  const { data: inserted, error } = await supabase
+    .from("high_schools")
+    .upsert({ school, ranks: {}, records: {}, key_wins: {} }, { onConflict: "school" })
+    .select("id")
+    .single();
+  if (error) throw error;
+  return inserted!.id as number;
+}
+
+async function ensureCircuitTeamId(team?: string): Promise<number | undefined> {
+  if (!team) return undefined;
+  const { data: existing } = await supabase
+    .from("circuit_teams")
+    .select("id")
+    .eq("team", team)
+    .maybeSingle();
+  if (existing?.id) return existing.id as number;
+  const { data: inserted, error } = await supabase
+    .from("circuit_teams")
+    .upsert({ team, ranks: {}, records: {}, key_wins: {}, placements: {} }, { onConflict: "team" })
+    .select("id")
+    .single();
+  if (error) throw error;
+  return inserted!.id as number;
+}
+
+async function ensureCollegeId(name?: string, logoUrl?: string): Promise<{ id?: number; logo_path?: string }> {
+  if (!name) return {};
+  // Try existing
+  const { data: existing } = await supabase
+    .from("colleges")
+    .select("id,logo_path")
+    .eq("name", name)
+    .maybeSingle();
+  if (existing?.id) return { id: existing.id as number, logo_path: existing.logo_path ?? undefined };
+
+  let logo_path: string | undefined;
+  if (logoUrl) {
+    try {
+      const res = await axios.get(logoUrl, { responseType: "arraybuffer" });
+      const ct = res.headers["content-type"] || "image/png";
+      const ext = ct.includes("png") ? ".png" : ct.includes("webp") ? ".webp" : ".jpg";
+      const fileName = `${slugify(name, { lower: true, strict: true })}-${crypto.randomUUID()}${ext}`;
+      const storagePath = path.posix.join("college_logos", fileName);
+      const uploaded = await uploadIfNeeded(BUCKET, storagePath, Buffer.from(res.data), ct);
+      logo_path = uploaded.path;
+    } catch {
+      // ignore logo upload failures
+    }
+  }
+  const { data: inserted, error } = await supabase
+    .from("colleges")
+    .upsert({ name, logo_path, logo_url: logoUrl ?? null }, { onConflict: "name" })
+    .select("id,logo_path")
+    .single();
+  if (error) throw error;
+  return { id: inserted!.id as number, logo_path: inserted!.logo_path ?? logo_path };
 }
 
 async function upsertPlayer(row: any) {
@@ -311,19 +378,29 @@ async function main() {
       } catch {}
       source_urls.add(url);
 
+    // Ensure related IDs
+      const high_school_id = await ensureHighSchoolId(p.high_school || undefined);
+      const circuit_team_id = await ensureCircuitTeamId(p.circuit_program || undefined);
+      const collegeInfo = await ensureCollegeId(p.committed_college || undefined, p.college_logo_url || undefined);
+      const committed_college_id = collegeInfo.id;
+      if (!collegeLogoPath && collegeInfo.logo_path) collegeLogoPath = collegeInfo.logo_path;
+
       const row = {
         name: p.name,
         grade_year: gradeYear ?? null,
         position: p.position ?? null,
         height: p.height ?? null,
         high_school: p.high_school ?? null,
+        high_school_id: high_school_id ?? null,
         circuit_program: p.circuit_program ?? null,
+        circuit_team_id: circuit_team_id ?? null,
         state: p.state ?? null,
         committed_college: p.committed_college ?? null,
+        committed_college_id: committed_college_id ?? null,
         rating: p.rating ?? null,
         rating_comment: p.rating_comment ?? null,
         image_path: playerImgPath ?? null,
-        college_logo_path: collegeLogoPath ?? null,
+        college_logo_path: null, // prefer reference via committed_college_id
         source_url: url,
         source_urls: Array.from(source_urls),
         ranks: mergedRanks,

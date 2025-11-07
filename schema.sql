@@ -10,9 +10,12 @@ create table if not exists public.players (
   position text,
   height text,
   high_school text,
+  high_school_id bigint references public.high_schools(id) on delete set null,
   circuit_program text,
+  circuit_team_id bigint references public.circuit_teams(id) on delete set null,
   state text,
   committed_college text,
+  committed_college_id bigint references public.colleges(id) on delete set null,
   rating int,
   rating_comment text,
   image_path text,
@@ -56,6 +59,7 @@ create index if not exists players_heights_gin_idx on public.players using gin (
 create index if not exists players_high_schools_gin_idx on public.players using gin (high_schools);
 create index if not exists players_circuit_programs_gin_idx on public.players using gin (circuit_programs);
 create index if not exists players_committed_colleges_gin_idx on public.players using gin (committed_colleges);
+create index if not exists players_fk_idx on public.players (high_school_id, circuit_team_id, committed_college_id);
 
 -- updated_at trigger
 create or replace function public.set_updated_at()
@@ -106,6 +110,17 @@ create table if not exists public.circuit_teams (
 );
 
 create unique index if not exists circuit_teams_team_key on public.circuit_teams (team);
+
+-- Colleges lookup table (unique college names and logos)
+create table if not exists public.colleges (
+  id bigserial primary key,
+  name text not null,
+  logo_path text,
+  logo_url text,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+create unique index if not exists colleges_name_key on public.colleges (name);
 
 drop trigger if exists set_circuit_teams_updated_at on public.circuit_teams;
 create trigger set_circuit_teams_updated_at
