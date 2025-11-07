@@ -2,7 +2,7 @@
   "compilerOptions": {
     "target": "ES2020",
     "module": "ESNext",
-    "moduleResolution": "Node",
+    "moduleResolution": "Bundler",
     "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
@@ -10,6 +10,9 @@
     "outDir": "dist",
     "resolveJsonModule": true,
     "types": ["node"]
+  },
+  "ts-node": {
+    "esm": true
   },
   "include": ["src"]
 }

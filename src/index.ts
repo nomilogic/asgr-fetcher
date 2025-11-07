@@ -19,7 +19,13 @@ if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
 
-const SOURCE_URL = "https://0xc.821.myftpupload.com/top-350-for-class-of-2024-2/";
+const SOURCE_URLS = [
+//  "https://0xc.821.myftpupload.com/top-350-for-class-of-2024-2/",
+  "https://0xc.821.myftpupload.com/top-350-for-class-of-2025/",
+  "https://0xc.821.myftpupload.com/top-350-for-class-of-2026/",
+  "https://0xc.821.myftpupload.com/top-350-for-class-of-2027/",
+  "https://0xc.821.myftpupload.com/top-350-for-class-of-2028/",
+];
 
 type Player = {
   rank?: number;
@@ -28,14 +34,15 @@ type Player = {
   height?: string;
   high_school?: string;
   state?: string;
+  circuit_program?: string;
   committed_college?: string;
+  rating?: number;
+  rating_comment?: string;
   player_image_url?: string;
   college_logo_url?: string;
 };
 
-type ParsedData = {
-  players: Player[];
-};
+type ParsedData = { players: Player[] };
 
 async function fetchHtml(url: string): Promise<string> {
   const res = await axios.get(url, { responseType: "text" });
@@ -47,64 +54,67 @@ function parsePlayers(html: string): ParsedData {
   const $ = cheerio.load(html);
   const players: Player[] = [];
 
-  // Heuristic selectors (update once exact structure is known)
-  $("article, .entry-content, .post, .elementor, .wp-block-table").each((_i, section) => {
-    const sectionText = $(section).text();
-    // Try table rows first
-    $(section)
-      .find("table tr")
-      .each((_r, tr) => {
-        const tds = $(tr).find("td");
-        if (tds.length >= 2) {
-          const rankText = $(tds[0]).text().trim();
-          const nameText = $(tds[1]).text().trim();
-          const rank = parseInt(rankText.replace(/[^0-9]/g, ""), 10);
-          if (!nameText) return;
-          const player: Player = { name: nameText };
-          if (!Number.isNaN(rank)) player.rank = rank;
+  const rows = $(".player__rank-table .divTable .divRow").filter((_i, el) => {
+    const $row = $(el);
+    if ($row.hasClass("player-founder")) return false;
+    return $row.find(".rank-count").length > 0;
+  });
 
-          // Best-effort parse for position/height/school/college, if present in later tds
-          if (tds.length >= 3) player.position = $(tds[2]).text().trim() || undefined;
-          if (tds.length >= 4) player.height = $(tds[3]).text().trim() || undefined;
-          if (tds.length >= 5) player.high_school = $(tds[4]).text().trim() || undefined;
-          if (tds.length >= 6) player.committed_college = $(tds[5]).text().trim() || undefined;
+  rows.each((_i, row) => {
+    const $row = $(row);
+    const cells = $row.children(".divCell");
 
-          // Try to discover images within row
-          const imgUrls = $(tr)
-            .find("img")
-            .map((_j, img) => $(img).attr("src"))
-            .get()
-            .filter(Boolean) as string[];
-          if (imgUrls.length > 0) {
-            player.player_image_url = imgUrls[0];
-            if (imgUrls.length > 1) player.college_logo_url = imgUrls[1];
-          }
-          players.push(player);
-        }
-      });
+    const rankText = $row.find(".rank-count").first().text().trim();
+    const rank = parseInt(rankText.replace(/[^0-9]/g, ""), 10);
 
-    // Fallback: try paragraphs that look like "1) Name - Pos - School - College"
-    sectionText
-      .split(/\n|\r/)
-      .map((s) => s.trim())
-      .filter(Boolean)
-      .forEach((line) => {
-        const m = line.match(/^(\d{1,3})\)?\s*[-.)]?\s*(.+)$/);
-        if (m) {
-          const rank = parseInt(m[1], 10);
-          const rest = m[2];
-          // naive split by " - "
-          const parts = rest.split(/\s+-\s+/);
-          const name = parts[0]?.trim();
-          if (name) {
-            const player: Player = { name, rank };
-            player.position = parts[1]?.trim();
-            player.high_school = parts[2]?.trim();
-            player.committed_college = parts[3]?.trim();
-            players.push(player);
-          }
-        }
-      });
+    const nameText =
+      $row.find(".player__name .name").text().trim() ||
+      $row.find(".player__name a").text().trim();
+
+    const heightText = cells.eq(2).text().trim(); // HT
+    const posText = cells.eq(3).text().trim(); // POS
+    // cells.eq(4) is Grad Year on page but we infer from URL
+    const hsText = cells.eq(5).text().trim(); // High School (often "City, ST")
+    const circuitProgram = cells.eq(6).text().trim(); // Circuit Program
+
+    const collegeLogo = $row.find(".college__cell img").attr("src") || undefined;
+    const collegeAlt = $row.find(".college__cell img").attr("alt") || undefined;
+
+    const playerImg = $row.find(".player__name figure img").attr("src") || undefined;
+
+    // Details row contains Rating and a quoted scouting blurb
+    let rating: number | undefined;
+    let rating_comment: string | undefined;
+    const dataId = $row.find(".player__name a").attr("data_id");
+    if (dataId) {
+      const $detail = $(`.player__rank-table .divTable #document_${dataId}`).closest(".divRow");
+      const detailText = $detail.find("p").first().text().trim();
+      const mRating = detailText.match(/rating\s*:\s*(\d{1,3})/i);
+      if (mRating) {
+        const r = parseInt(mRating[1], 10);
+        if (!Number.isNaN(r) && r >= 0 && r <= 100) rating = r;
+      }
+      const mQuote = detailText.match(/"([^"]+)"/);
+      if (mQuote) rating_comment = mQuote[1].trim();
+    }
+
+    if (!nameText) return;
+
+    const p: Player = {
+      name: nameText,
+      rank: Number.isNaN(rank) ? undefined : rank,
+      height: heightText || undefined,
+      position: posText || undefined,
+      high_school: hsText || undefined,
+      circuit_program: circuitProgram || undefined,
+      committed_college: collegeAlt || undefined,
+      rating,
+      rating_comment,
+      player_image_url: playerImg,
+      college_logo_url: collegeLogo,
+    };
+
+    players.push(p);
   });
 
   // De-duplicate by name+rank
@@ -134,7 +144,6 @@ async function bufferFromUrl(url: string): Promise<{ data: Buffer; ext: string }
 }
 
 async function uploadIfNeeded(bucket: string, filePath: string, data: Buffer, contentType?: string) {
-  // Check if exists
   const { data: existing } = await supabase.storage.from(bucket).list(path.dirname(filePath), {
     search: path.basename(filePath),
   });
@@ -150,7 +159,10 @@ async function uploadIfNeeded(bucket: string, filePath: string, data: Buffer, co
 }
 
 async function upsertPlayer(row: any) {
-  const { data, error } = await supabase.from("players").upsert(row, { onConflict: "name,rank" }).select();
+  const { data, error } = await supabase
+    .from("players")
+    .upsert(row, { onConflict: "name,rank,grade_year" })
+    .select();
   if (error) throw error;
   return data?.[0];
 }
@@ -159,65 +171,92 @@ function toSlug(s: string) {
   return slugify(s, { lower: true, strict: true });
 }
 
+function extractClassYearFromUrl(url: string): number | undefined {
+  const m = url.match(/(20\d{2})/);
+  if (!m) return undefined;
+  const yr = parseInt(m[1], 10);
+  if (yr >= 2000 && yr <= 2100) return yr;
+  return undefined;
+}
+
 async function main() {
-  console.log("Fetching source HTML...");
-  const html = await fetchHtml(SOURCE_URL);
-  const parsed = parsePlayers(html);
-  console.log(`Parsed ${parsed.players.length} players (pre-filter).`);
+  const results: Array<{ name: string; id?: any; player_img?: string; college_logo?: string; url: string }> = [];
 
-  const results: Array<{ name: string; id?: any; player_img?: string; college_logo?: string }> = [];
+  for (const url of SOURCE_URLS) {
+    console.log(`Fetching source HTML: ${url}`);
+    const html = await fetchHtml(url);
+    const parsed = parsePlayers(html);
+    console.log(`Parsed ${parsed.players.length} players (pre-filter) from ${url}.`);
 
-  for (const p of parsed.players) {
-    const playerSlug = toSlug(p.name);
+    const gradeYear = extractClassYearFromUrl(url);
 
-    let playerImgPath: string | undefined;
-    if (p.player_image_url) {
-      try {
-        const { data, ext } = await bufferFromUrl(p.player_image_url);
-        const guessExt = ext || ".jpg";
-        const fileName = `${playerSlug}-${crypto.randomUUID()}${guessExt}`;
-        const storagePath = path.posix.join("players", fileName);
-        const contentType = ext === ".png" ? "image/png" : ext === ".webp" ? "image/webp" : "image/jpeg";
-        const uploaded = await uploadIfNeeded(BUCKET, storagePath, data, contentType);
-        playerImgPath = uploaded.path;
-      } catch (e) {
-        console.warn(`Player image upload failed for ${p.name}:`, (e as Error).message);
+    for (const p of parsed.players) {
+      const playerSlug = toSlug(p.name);
+
+      let playerImgPath: string | undefined;
+      if (p.player_image_url) {
+        try {
+          const { data, ext } = await bufferFromUrl(p.player_image_url);
+          const guessExt = ext || ".jpg";
+          const fileName = `${playerSlug}-${crypto.randomUUID()}${guessExt}`;
+          const storagePath = path.posix.join("players", fileName);
+          const contentType =
+            ext === ".png" ? "image/png" : ext === ".webp" ? "image/webp" : "image/jpeg";
+          const uploaded = await uploadIfNeeded(BUCKET, storagePath, data, contentType);
+          playerImgPath = uploaded.path;
+        } catch (e) {
+          console.warn(`Player image upload failed for ${p.name}:`, (e as Error).message);
+        }
       }
-    }
 
-    let collegeLogoPath: string | undefined;
-    if (p.college_logo_url) {
-      try {
-        const { data, ext } = await bufferFromUrl(p.college_logo_url);
-        const guessExt = ext || ".png";
-        const fileName = `${toSlug(p.committed_college || "college")}-${crypto.randomUUID()}${guessExt}`;
-        const storagePath = path.posix.join("logos", fileName);
-        const contentType = ext === ".jpg" || ext === ".jpeg" ? "image/jpeg" : ext === ".webp" ? "image/webp" : "image/png";
-        const uploaded = await uploadIfNeeded(BUCKET, storagePath, data, contentType);
-        collegeLogoPath = uploaded.path;
-      } catch (e) {
-        console.warn(`College logo upload failed for ${p.name}:`, (e as Error).message);
+      let collegeLogoPath: string | undefined;
+      if (p.college_logo_url) {
+        try {
+          const { data, ext } = await bufferFromUrl(p.college_logo_url);
+          const guessExt = ext || ".png";
+          const fileName = `${toSlug(p.committed_college || "college")}-${crypto.randomUUID()}${guessExt}`;
+          const storagePath = path.posix.join("logos", fileName);
+          const contentType =
+            ext === ".jpg" || ext === ".jpeg" ? "image/jpeg" : ext === ".webp" ? "image/webp" : "image/png";
+          const uploaded = await uploadIfNeeded(BUCKET, storagePath, data, contentType);
+          collegeLogoPath = uploaded.path;
+        } catch (e) {
+          console.warn(`College logo upload failed for ${p.name}:`, (e as Error).message);
+        }
       }
-    }
 
-    const row = {
-      rank: p.rank ?? null,
-      name: p.name,
-      position: p.position ?? null,
-      height: p.height ?? null,
-      high_school: p.high_school ?? null,
-      state: p.state ?? null,
-      committed_college: p.committed_college ?? null,
-      image_path: playerImgPath ?? null,
-      college_logo_path: collegeLogoPath ?? null,
-      source_url: SOURCE_URL,
-    };
+      const row = {
+        rank: p.rank ?? null,
+        name: p.name,
+        grade_year: gradeYear ?? null,
+        position: p.position ?? null,
+        height: p.height ?? null,
+        high_school: p.high_school ?? null,
+        circuit_program: p.circuit_program ?? null,
+        state: p.state ?? null,
+        committed_college: p.committed_college ?? null,
+        rating: p.rating ?? null,
+        rating_comment: p.rating_comment ?? null,
+        image_path: playerImgPath ?? null,
+        college_logo_path: collegeLogoPath ?? null,
+        source_url: url,
+      };
 
-    try {
-      const saved = await upsertPlayer(row);
-      results.push({ name: p.name, id: saved?.id, player_img: playerImgPath, college_logo: collegeLogoPath });
-    } catch (e) {
-      console.warn(`DB upsert failed for ${p.name}:`, (e as Error).message);
+      try {
+        const saved = await upsertPlayer(row);
+        results.push({
+          name: p.name,
+          id: saved?.id,
+          player_img: playerImgPath,
+          college_logo: collegeLogoPath,
+          url,
+        });
+      } catch (e) {
+        console.warn(
+          `DB upsert failed for ${p.name} (grade_year=${row.grade_year ?? "null"}, rating=${row.rating ?? "null"}):`,
+          (e as Error).message
+        );
+      }
     }
   }
 
