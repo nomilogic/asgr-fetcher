@@ -10,7 +10,9 @@
     "start": "node dist/index.js",
     "sync": "node --loader ts-node/esm src/index.ts",
     "db:setup": "node --loader ts-node/esm scripts/apply-schema.ts",
-    "hs:fetch": "node --loader ts-node/esm src/fetch_hs_rankings.ts"
+    "hs:fetch": "node --loader ts-node/esm src/fetch_hs_rankings.ts",
+    "hs:ingest": "node --loader ts-node/esm src/ingest_hs_rankings.ts",
+    "circuit:ingest": "node --loader ts-node/esm src/ingest_circuit_rankings.ts"
   },
   "keywords": [],
   "author": "",
