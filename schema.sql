@@ -28,16 +28,34 @@ alter table if exists public.players
   add column if not exists grade_year int,
   add column if not exists circuit_program text,
   add column if not exists rating int,
-  add column if not exists rating_comment text;
+  add column if not exists rating_comment text,
+  add column if not exists ranks jsonb default '{}'::jsonb,
+  add column if not exists ratings jsonb default '{}'::jsonb,
+  add column if not exists notes jsonb default '{}'::jsonb,
+  add column if not exists positions jsonb default '{}'::jsonb,
+  add column if not exists heights jsonb default '{}'::jsonb,
+  add column if not exists high_schools jsonb default '{}'::jsonb,
+  add column if not exists circuit_programs jsonb default '{}'::jsonb,
+  add column if not exists committed_colleges jsonb default '{}'::jsonb,
+  add column if not exists source_urls text[];
 
--- Unique key: per player name + rank within a grade_year
+-- Switch uniqueness to name (we merge per-player ranks into JSON)
 drop index if exists players_name_rank_key;
 drop index if exists players_name_rank_year_key;
 drop index if exists players_class_year_rank_idx;
-create unique index if not exists players_name_rank_grade_year_key on public.players (name, rank, grade_year);
+drop index if exists players_name_rank_grade_year_key;
+create unique index if not exists players_name_key on public.players (name);
 
--- Helpful read path
+-- Helpful indexes
 create index if not exists players_grade_year_rank_idx on public.players (grade_year, rank);
+create index if not exists players_ranks_gin_idx on public.players using gin (ranks);
+create index if not exists players_ratings_gin_idx on public.players using gin (ratings);
+create index if not exists players_notes_gin_idx on public.players using gin (notes);
+create index if not exists players_positions_gin_idx on public.players using gin (positions);
+create index if not exists players_heights_gin_idx on public.players using gin (heights);
+create index if not exists players_high_schools_gin_idx on public.players using gin (high_schools);
+create index if not exists players_circuit_programs_gin_idx on public.players using gin (circuit_programs);
+create index if not exists players_committed_colleges_gin_idx on public.players using gin (committed_colleges);
 
 -- updated_at trigger
 create or replace function public.set_updated_at()

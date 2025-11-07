@@ -161,7 +161,7 @@ async function uploadIfNeeded(bucket: string, filePath: string, data: Buffer, co
 async function upsertPlayer(row: any) {
   const { data, error } = await supabase
     .from("players")
-    .upsert(row, { onConflict: "name,rank,grade_year" })
+    .upsert(row, { onConflict: "name" })
     .select();
   if (error) throw error;
   return data?.[0];
@@ -179,6 +179,18 @@ function extractClassYearFromUrl(url: string): number | undefined {
   return undefined;
 }
 
+function seasonKeyFromUrl(url: string): string {
+  const yr = extractClassYearFromUrl(url);
+  if (yr) return String(yr);
+  try {
+    const u = new URL(url);
+    const seg = u.pathname.replace(/\/$/, "").split("/").pop() || "ranking";
+    return seg;
+  } catch {
+    return "ranking";
+  }
+}
+
 async function main() {
   const results: Array<{ name: string; id?: any; player_img?: string; college_logo?: string; url: string }> = [];
 
@@ -189,6 +201,7 @@ async function main() {
     console.log(`Parsed ${parsed.players.length} players (pre-filter) from ${url}.`);
 
     const gradeYear = extractClassYearFromUrl(url);
+    const seasonKey = seasonKeyFromUrl(url);
 
     for (const p of parsed.players) {
       const playerSlug = toSlug(p.name);
@@ -225,8 +238,80 @@ async function main() {
         }
       }
 
+      // Merge ranks JSON per player (by name)
+      let existingRanks: Record<string, any> = {};
+      try {
+        const { data: existingRow } = await supabase
+          .from("players")
+          .select("id,ranks,image_path,college_logo_path")
+          .eq("name", p.name)
+          .maybeSingle();
+        if (existingRow?.ranks) existingRanks = existingRow.ranks as Record<string, any>;
+        // If no new image uploaded, keep existing paths to avoid nulling
+        if (!playerImgPath && existingRow?.image_path) playerImgPath = existingRow.image_path;
+        if (!collegeLogoPath && existingRow?.college_logo_path) collegeLogoPath = existingRow.college_logo_path;
+      } catch {}
+
+      const mergedRanks = { ...existingRanks };
+      if (typeof p.rank === "number") mergedRanks[seasonKey] = p.rank;
+
+      // Load/merge other per-season maps
+      let existingRatings: Record<string, any> = {};
+      let existingNotes: Record<string, any> = {};
+      let existingPositions: Record<string, any> = {};
+      let existingHeights: Record<string, any> = {};
+      let existingHighSchools: Record<string, any> = {};
+      let existingCircuits: Record<string, any> = {};
+      let existingColleges: Record<string, any> = {};
+      try {
+        const { data: existingRow2 } = await supabase
+          .from("players")
+          .select("ratings,notes,positions,heights,high_schools,circuit_programs,committed_colleges,source_urls")
+          .eq("name", p.name)
+          .maybeSingle();
+        if (existingRow2?.ratings) existingRatings = existingRow2.ratings;
+        if (existingRow2?.notes) existingNotes = existingRow2.notes;
+        if (existingRow2?.positions) existingPositions = existingRow2.positions;
+        if (existingRow2?.heights) existingHeights = existingRow2.heights;
+        if (existingRow2?.high_schools) existingHighSchools = existingRow2.high_schools;
+        if (existingRow2?.circuit_programs) existingCircuits = existingRow2.circuit_programs;
+        if (existingRow2?.committed_colleges) existingColleges = existingRow2.committed_colleges;
+      } catch {}
+
+      const ratings = { ...existingRatings };
+      if (typeof p.rating === "number") ratings[seasonKey] = p.rating;
+
+      const notes = { ...existingNotes };
+      if (p.rating_comment) notes[seasonKey] = p.rating_comment;
+
+      const positions = { ...existingPositions };
+      if (p.position) positions[seasonKey] = p.position;
+
+      const heights = { ...existingHeights };
+      if (p.height) heights[seasonKey] = p.height;
+
+      const high_schools = { ...existingHighSchools };
+      if (p.high_school) high_schools[seasonKey] = p.high_school;
+
+      const circuit_programs = { ...existingCircuits };
+      if (p.circuit_program) circuit_programs[seasonKey] = p.circuit_program;
+
+      const committed_colleges = { ...existingColleges };
+      if (p.committed_college) committed_colleges[seasonKey] = p.committed_college;
+
+      // Merge sources
+      const source_urls = new Set<string>();
+      try {
+        const { data: srcRow } = await supabase
+          .from("players")
+          .select("source_urls")
+          .eq("name", p.name)
+          .maybeSingle();
+        for (const s of srcRow?.source_urls || []) source_urls.add(s);
+      } catch {}
+      source_urls.add(url);
+
       const row = {
-        rank: p.rank ?? null,
         name: p.name,
         grade_year: gradeYear ?? null,
         position: p.position ?? null,
@@ -240,7 +325,16 @@ async function main() {
         image_path: playerImgPath ?? null,
         college_logo_path: collegeLogoPath ?? null,
         source_url: url,
-      };
+        source_urls: Array.from(source_urls),
+        ranks: mergedRanks,
+        ratings,
+        notes,
+        positions,
+        heights,
+        high_schools,
+        circuit_programs,
+        committed_colleges,
+      } as any;
 
       try {
         const saved = await upsertPlayer(row);
