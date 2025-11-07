@@ -1,0 +1,575 @@
+[
+  {
+    "rank": 1,
+    "school": "IMG Academy (FL)",
+    "record": "19-4",
+    "keyWins": "Chipotle National Champion",
+    "logo": "https://0xc.821.myftpupload.com/wp-content/uploads/2024/05/IMGLogo-e1715753266636.jpg"
+  },
+  {
+    "rank": 2,
+    "school": "Montverde Academy (FL)",
+    "record": "26-2",
+    "keyWins": "Chipotle Runner Up",
+    "logo": "https://0xc.821.myftpupload.com/wp-content/uploads/2024/05/MTVLogo-e1715752496727.jpg"
+  },
+  {
+    "rank": 3,
+    "school": "Bishop McNamara (MD)",
+    "record": "30-2",
+    "keyWins": "WCAC Champions, The Throne Semifinals",
+    "logo": "https://0xc.821.myftpupload.com/wp-content/uploads/2024/05/BMLogo-e1715753071884.png"
+  },
+  {
+    "rank": 4,
+    "school": "Etiwanda (CA)",
+    "record": "28-5",
+    "keyWins": "CIF Open State Champion",
+    "logo": "https://0xc.821.myftpupload.com/wp-content/uploads/2024/05/EtiwandaLogo-e1715752668245.jpg"
+  },
+  {
+    "rank": 5,
+    "school": "Westtown School (PA)",
+    "record": "27-4",
+    "keyWins": "Chipotle National Semifinal",
+    "logo": "https://0xc.821.myftpupload.com/wp-content/uploads/2024/10/WesttownLogo.jpg"
+  },
+  {
+    "rank": 6,
+    "school": "Archbishop Mitty (CA)",
+    "record": "27-4",
+    "keyWins": "CIF Open State Runner Up",
+    "logo": "https://0xc.821.myftpupload.com/wp-content/uploads/2024/05/AMLogo.png"
+  },
+  {
+    "rank": 7,
+    "school": "Bishop Ireton (VA)",
+    "record": "31-6",
+    "keyWins": "VISAA D1 State Champion, The Throne National Champions",
+    "logo": "https://0xc.821.myftpupload.com/wp-content/uploads/2024/05/BILogo-e1715758810127.jpg"
+  },
+  {
+    "rank": 8,
+    "school": "Ontario Christian (CA)",
+    "record": "30-2",
+    "keyWins": "CIF Open State Regional Finals",
+    "logo": "https://0xc.821.myftpupload.com/wp-content/uploads/2024/10/OCLogo.png"
+  },
+  {
+    "rank": 9,
+    "school": "Sidwell Friends (DC)",
+    "record": "27-4",
+    "keyWins": "The Throne Runner Up",
+    "logo": "https://0xc.821.myftpupload.com/wp-content/uploads/2024/10/SFLogo.png"
+  },
+  {
+    "rank": 10,
+    "school": "Sierra Canyon (CA)",
+    "record": "28-3",
+    "keyWins": "CIF Open State Regional Semifinals",
+    "logo": "https://0xc.821.myftpupload.com/wp-content/uploads/2024/05/SCLogo-e1715753322110.png"
+  },
+  {
+    "rank": 11,
+    "school": "Johnston (IA)",
+    "record": "26-0",
+    "keyWins": "IGHSAU Class 5A State Champion",
+    "logo": "https://0xc.821.myftpupload.com/wp-content/uploads/2024/10/JohnstonLogo.png"
+  },
+  {
+    "rank": 12,
+    "school": "Morris Catholic (NJ)",
+    "record": "29-1",
+    "keyWins": "NJSIAA North Jersey Non-Public A State Champions, The Throne Semifinals",
+    "logo": "https://0xc.821.myftpupload.com/wp-content/uploads/2024/05/MCLogo.jpg"
+  },
+  {
+    "rank": 13,
+    "school": "Mater Dei (CA)",
+    "record": "29-5",
+    "keyWins": "CIF Open State Regional Semifinals, The Throne Eite 8",
+    "logo": "https://0xc.821.myftpupload.com/wp-content/uploads/2024/05/MDLogo-e1715758642358.png"
+  },
+  {
+    "rank": 14,
+    "school": "Winston Salem Christian Nat'l (NC)",
+    "record": "30-4",
+    "keyWins": "IE Prep National Champions",
+    "logo": "https://0xc.821.myftpupload.com/wp-content/uploads/2024/10/WSCLogo.jpg"
+  },
+  {
+    "rank": 15,
+    "school": "Long Island Lutheran (NY)",
+    "record": "15-5",
+    "logo": "https://0xc.821.myftpupload.com/wp-content/uploads/2024/05/LILLogo-e1715752880371.png"
+  },
+  {
+    "rank": 16,
+    "school": "Faith Family Academy (TX)",
+    "record": "15-7",
+    "keyWins": "Chipotle National Semifinal",
+    "logo": "https://0xc.821.myftpupload.com/wp-content/uploads/2024/10/FFATXLogo.jpg"
+  },
+  {
+    "rank": 17,
+    "school": "Fort Worth Boswell (TX)",
+    "record": "39-2",
+    "keyWins": "Texas UIL 6A Division 2 State Champion",
+    "logo": "https://0xc.821.myftpupload.com/wp-content/uploads/2024/11/FTbosLogo.jpg"
+  },
+  {
+    "rank": 18,
+    "school": "Holy Innocents Episcopal (GA)",
+    "record": "25-5",
+    "keyWins": "GHSA Class Private State Champion",
+    "logo": "https://0xc.821.myftpupload.com/wp-content/uploads/2024/11/HolyInnocentsLogo.jpg"
+  },
+  {
+    "rank": 19,
+    "school": "Summer Creek (TX)",
+    "record": "30-11",
+    "keyWins": "Texas UIL 6A D1 State Champion",
+    "logo": "https://0xc.821.myftpupload.com/wp-content/uploads/2025/04/SummerCreekLogo.jpg"
+  },
+  {
+    "rank": 20,
+    "school": "Hebron Christian Academy (GA)",
+    "record": "29-2",
+    "keyWins": "GHSA Class Private State Runner Up",
+    "logo": "https://0xc.821.myftpupload.com/wp-content/uploads/2024/05/HebronChristianLogo-e1715753298625.png"
+  },
+  {
+    "rank": 21,
+    "school": "Bradley Central (TN)",
+    "record": "35-1",
+    "keyWins": "TSSAA Class 4A State Champions",
+    "logo": "https://0xc.821.myftpupload.com/wp-content/uploads/2024/10/BradleyCentralLogo.jpg"
+  },
+  {
+    "rank": 22,
+    "school": "Cypress Springs (TX)",
+    "record": "30-4",
+    "keyWins": "Texas UIL 6A Region 2 Runner Up",
+    "logo": "https://0xc.821.myftpupload.com/wp-content/uploads/2024/12/cyspringsLogo.png"
+  },
+  {
+    "rank": 23,
+    "school": "Monterey (TX)",
+    "record": "36-5",
+    "keyWins": "Texas UIL 5A Division 2 State Champion",
+    "logo": "https://0xc.821.myftpupload.com/wp-content/uploads/2024/11/MontereyLogo.jpg"
+  },
+  {
+    "rank": 24,
+    "school": "Duncanville (TX)",
+    "record": "29-7",
+    "keyWins": "Texas UIL 6A Regional Finals",
+    "logo": "https://0xc.821.myftpupload.com/wp-content/uploads/2024/05/DuncanvilleLogo-e1715752932556.png"
+  },
+  {
+    "rank": 25,
+    "school": "Purcell Marian (OH)",
+    "record": "23-6",
+    "keyWins": "OHSAA DIII Champions",
+    "logo": "https://0xc.821.myftpupload.com/wp-content/uploads/2024/05/PMLogo-e1715756633992.png"
+  },
+  {
+    "rank": 26,
+    "school": "Bullis School (MD)",
+    "record": "24-8",
+    "logo": "https://0xc.821.myftpupload.com/wp-content/uploads/2024/11/BullisLogo.png"
+  },
+  {
+    "rank": 27,
+    "school": "River Ridge (GA)",
+    "record": "31-1",
+    "keyWins": "GHSA 5A State Champion",
+    "logo": "https://0xc.821.myftpupload.com/wp-content/uploads/2025/04/RiverRidgeLogo.webp"
+  },
+  {
+    "rank": 28,
+    "school": "Langston Hughes (GA)",
+    "record": "29-3",
+    "keyWins": "GHSA 5A State Runner Up",
+    "logo": "https://0xc.821.myftpupload.com/wp-content/uploads/2024/12/LangstonHughesLogo.png"
+  },
+  {
+    "rank": 29,
+    "school": "Puntnam City North (OK)",
+    "record": "29-1",
+    "keyWins": "OSSAA 6A State Champion",
+    "logo": "https://0xc.821.myftpupload.com/wp-content/uploads/2025/04/PCnorthgbblogo.jpg"
+  },
+  {
+    "rank": 30,
+    "school": "PHH Prep Nat'l (AZ)",
+    "record": "17-7",
+    "logo": "https://0xc.821.myftpupload.com/wp-content/uploads/2024/11/PHHLogo.jpg"
+  },
+  {
+    "rank": 31,
+    "school": "Grandview Prep (FL)",
+    "record": "26-4",
+    "logo": "https://0xc.821.myftpupload.com/wp-content/uploads/2024/12/grandviewpreplogo.jpg"
+  },
+  {
+    "rank": 32,
+    "school": "Cardinal Mooney (FL)",
+    "record": "24-9",
+    "keyWins": "FHSAA 3A State Champion",
+    "logo": "https://0xc.821.myftpupload.com/wp-content/uploads/2024/12/CardinalMooneyLogo.jpg"
+  },
+  {
+    "rank": 33,
+    "school": "DME Academy (FL)",
+    "record": "27-9",
+    "logo": "https://0xc.821.myftpupload.com/wp-content/uploads/2024/10/DMELogo.jpg"
+  },
+  {
+    "rank": 34,
+    "school": "Grandview (CO)",
+    "record": "25-3",
+    "keyWins": "CHSAA 6A State Champion",
+    "logo": "https://0xc.821.myftpupload.com/wp-content/uploads/2024/12/grandviewCOlogo.png"
+  },
+  {
+    "rank": 35,
+    "school": "Central Pointe Christian Nat'l (FL)",
+    "record": "22-7",
+    "logo": "https://0xc.821.myftpupload.com/wp-content/uploads/2024/10/CPCLogo.jpg"
+  },
+  {
+    "rank": 36,
+    "school": "Dallas Lincoln (TX)",
+    "record": "39-2",
+    "keyWins": "Texas UIL 4A D2 State Champion",
+    "logo": "https://0xc.821.myftpupload.com/wp-content/uploads/2024/11/DallasLinLogo.jpg"
+  },
+  {
+    "rank": 37,
+    "school": "Legion Prep Acadmey (TX)",
+    "record": "19-10",
+    "logo": "https://0xc.821.myftpupload.com/wp-content/uploads/2024/10/LegionPrepTXlogo.jpg"
+  },
+  {
+    "rank": 38,
+    "school": "Cedar Hill (TX)",
+    "record": "29-9",
+    "keyWins": "Texas UIL 6A D1 Runner Up",
+    "logo": "https://0xc.821.myftpupload.com/wp-content/uploads/2025/04/cedarhilllogo.png"
+  },
+  {
+    "rank": 39,
+    "school": "Lake Norman (NC)",
+    "record": "30-1",
+    "keyWins": "NCHSAA 4A State Champion",
+    "logo": "https://0xc.821.myftpupload.com/wp-content/uploads/2025/04/lakenormanlogo.jpg"
+  },
+  {
+    "rank": 40,
+    "school": "Fort Bend Hightower (TX)",
+    "record": "34-6",
+    "keyWins": "Texas UIL 6A D2 Runner Up",
+    "logo": "https://0xc.821.myftpupload.com/wp-content/uploads/2025/04/FBhightowerlogo.jpg"
+  },
+  {
+    "rank": 41,
+    "school": "Lawrence Central (IN)",
+    "record": "22-2",
+    "keyWins": "IHSAA Sectional Runner Up",
+    "logo": "https://0xc.821.myftpupload.com/wp-content/uploads/2024/10/LawrenceCentralLogo.jpg"
+  },
+  {
+    "rank": 42,
+    "school": "Denton Ryan (TX)",
+    "record": "32-7",
+    "keyWins": "Texas UIL 5A D1 State Champion",
+    "logo": "https://0xc.821.myftpupload.com/wp-content/uploads/2025/04/dentonryangbblogo.jpg"
+  },
+  {
+    "rank": 43,
+    "school": "San Antonio Wagner (TX)",
+    "record": "34-3",
+    "keyWins": "Texas UIL 5A D1 Runner Up",
+    "logo": "https://0xc.821.myftpupload.com/wp-content/uploads/2025/04/sawagnerlogo.jpg"
+  },
+  {
+    "rank": 44,
+    "school": "Grind Prep (OK)",
+    "record": "19-11",
+    "logo": "https://0xc.821.myftpupload.com/wp-content/uploads/2024/12/GrindPrepLogo.png"
+  },
+  {
+    "rank": 45,
+    "school": "Liberty Hill (TX)",
+    "record": "36-5",
+    "keyWins": "Texas UIL 5A D2 Runner Up",
+    "logo": "https://0xc.821.myftpupload.com/wp-content/uploads/2025/04/libertyhillllogo.jpg"
+  },
+  {
+    "rank": 46,
+    "school": "Incarnate Word Academy (MO)",
+    "record": "27-2",
+    "keyWins": "MSHSAA 6A State Champion",
+    "logo": "https://0xc.821.myftpupload.com/wp-content/uploads/2024/05/IWALogo-e1715756789124.jpg"
+  },
+  {
+    "rank": 47,
+    "school": "Winton Woods (OH)",
+    "record": "27-0",
+    "keyWins": "OHSAA Dll State Champion",
+    "logo": "https://0xc.821.myftpupload.com/wp-content/uploads/2025/04/wintonwoodslogo.png"
+  },
+  {
+    "rank": 48,
+    "school": "Elizabeth Seton (MD)",
+    "record": "20-10",
+    "logo": "https://0xc.821.myftpupload.com/wp-content/uploads/2024/12/ElizabethSetonLogo.png"
+  },
+  {
+    "rank": 49,
+    "school": "Hamilton Southeastern (IN)",
+    "record": "27-1",
+    "keyWins": "IHSAA 4A State Semifinal",
+    "logo": "https://0xc.821.myftpupload.com/wp-content/uploads/2024/11/HamiltonSELogo.png"
+  },
+  {
+    "rank": 50,
+    "school": "Decatur (TX)",
+    "record": "36-2",
+    "keyWins": "Texas UIL 4A D1 State Champion",
+    "logo": "https://0xc.821.myftpupload.com/wp-content/uploads/2025/04/dacaturtxlogo.jpg"
+  },
+  {
+    "rank": 51,
+    "school": "Christ the King (NY)",
+    "record": "25-6",
+    "keyWins": "CHSAA City Champions, CHSAA Brooklyn/Queens Runner Up",
+    "logo": "https://0xc.821.myftpupload.com/wp-content/uploads/2024/12/christthekinglogo.jpg"
+  },
+  {
+    "rank": 52,
+    "school": "Cuero (TX)",
+    "record": "33-7",
+    "keyWins": "Texas UIL 4A D2 Runner Up",
+    "logo": "https://0xc.821.myftpupload.com/wp-content/uploads/2025/04/cuerologo.png"
+  },
+  {
+    "rank": 53,
+    "school": "Tualatin (OR)",
+    "record": "26-2",
+    "keyWins": "OSAA 6A State Champion",
+    "logo": "https://0xc.821.myftpupload.com/wp-content/uploads/2025/04/Tualitangbblogo.png"
+  },
+  {
+    "rank": 54,
+    "school": "Waco La Vega (TX)",
+    "record": "33-7",
+    "keyWins": "Texas UIL 4A D1 Runner Up",
+    "logo": "https://0xc.821.myftpupload.com/wp-content/uploads/2025/04/lavegalogo.png"
+  },
+  {
+    "rank": 55,
+    "school": "S3 Academy (VA)",
+    "record": "22-5",
+    "logo": "https://0xc.821.myftpupload.com/wp-content/uploads/2024/12/S3AcademyLogo.png"
+  },
+  {
+    "rank": 56,
+    "school": "Example Academy Nat'l (IL)",
+    "record": "17-9",
+    "logo": "https://0xc.821.myftpupload.com/wp-content/uploads/2024/11/ExampleAcademyLogo.jpg"
+  },
+  {
+    "rank": 57,
+    "school": "Kenwood Academy (IL)",
+    "record": "35-3",
+    "keyWins": "IHSA 4A State Champion",
+    "logo": "https://0xc.821.myftpupload.com/wp-content/uploads/2025/04/kenwoodlogogbb.png"
+  },
+  {
+    "rank": 58,
+    "school": "Clackmas (OR)",
+    "record": "27-3",
+    "keyWins": "OSAA 6A State Runner Up",
+    "logo": "https://0xc.821.myftpupload.com/wp-content/uploads/2024/11/ClackmasLogo.png"
+  },
+  {
+    "rank": 59,
+    "school": "Whitney Young (IL)",
+    "record": "25-9",
+    "keyWins": "IHSA City Title Champions",
+    "logo": "https://0xc.821.myftpupload.com/wp-content/uploads/2024/11/WhitneyYoungLogo.png"
+  },
+  {
+    "rank": 60,
+    "school": "St. John's College (DC)",
+    "record": "26-6",
+    "logo": "https://0xc.821.myftpupload.com/wp-content/uploads/2024/12/SJCLogo.png"
+  },
+  {
+    "rank": 61,
+    "school": "Sacred Heart (KY)",
+    "record": "36-3",
+    "keyWins": "KHSAA State Champion",
+    "logo": "https://0xc.821.myftpupload.com/wp-content/uploads/2024/11/SacredHeartLogo.jpg"
+  },
+  {
+    "rank": 62,
+    "school": "Palm Bay (FL)",
+    "record": "25-7",
+    "keyWins": "FHSAA 4A State Champion, The Throne Elite 8",
+    "logo": "https://0xc.821.myftpupload.com/wp-content/uploads/2024/12/PalmBayLogo.png"
+  },
+  {
+    "rank": 63,
+    "school": "Princess Anne (VA)",
+    "record": "28-0",
+    "keyWins": "VHSL 5A State Champion, The Throne Elite 8",
+    "logo": "https://0xc.821.myftpupload.com/wp-content/uploads/2025/04/Princessannelogo.jpg"
+  },
+  {
+    "rank": 64,
+    "school": "Grace Christian (NC)",
+    "record": "22-4",
+    "keyWins": "NCISAA State Champion",
+    "logo": "https://0xc.821.myftpupload.com/wp-content/uploads/2024/12/GraceChristianLogo.jpg"
+  },
+  {
+    "rank": 65,
+    "school": "Miami Country Day (FL)",
+    "record": "20-11",
+    "keyWins": "FHSAA 2A State Champion",
+    "logo": "https://0xc.821.myftpupload.com/wp-content/uploads/2024/12/MiamiCDLogo.png"
+  },
+  {
+    "rank": 66,
+    "school": "Pickerington Central (OH)",
+    "record": "25-3",
+    "keyWins": "OHSAA D1 State Champion",
+    "logo": "https://0xc.821.myftpupload.com/wp-content/uploads/2025/04/pickeringtoncentrallogo.jpg"
+  },
+  {
+    "rank": 67,
+    "school": "Paul VI (NJ)",
+    "record": "27-1",
+    "keyWins": "South Jersey Non Public A Champion",
+    "logo": "https://0xc.821.myftpupload.com/wp-content/uploads/2025/04/paulVIgbblogo.jpg"
+  },
+  {
+    "rank": 68,
+    "school": "Western Reserve Academy (OH)",
+    "record": "19-11",
+    "logo": "https://0xc.821.myftpupload.com/wp-content/uploads/2025/04/WSAlogo.jpg"
+  },
+  {
+    "rank": 69,
+    "school": "Centennial (NV)",
+    "record": "23-2",
+    "keyWins": "NIAA 5A State Champion",
+    "logo": "https://0xc.821.myftpupload.com/wp-content/uploads/2024/11/CentLogo.jpg"
+  },
+  {
+    "rank": 70,
+    "school": "Blair Academy (NJ)",
+    "record": "21-4",
+    "logo": "https://0xc.821.myftpupload.com/wp-content/uploads/2024/12/BlairLogo.jpg"
+  },
+  {
+    "rank": 71,
+    "school": "NC GBB Nat'l (NC)",
+    "record": "14-9",
+    "logo": "https://0xc.821.myftpupload.com/wp-content/uploads/2024/11/NCGBBLogo.png"
+  },
+  {
+    "rank": 72,
+    "school": "Winter Haven (FL)",
+    "record": "27-2",
+    "keyWins": "FHSAA 7A State Champion",
+    "logo": "https://0xc.821.myftpupload.com/wp-content/uploads/2024/12/WHLogo.png"
+  },
+  {
+    "rank": 73,
+    "school": "Nazareth Academy (IL)",
+    "record": "31-3",
+    "logo": "https://0xc.821.myftpupload.com/wp-content/uploads/2025/04/nazarethlogogbb.jpg"
+  },
+  {
+    "rank": 74,
+    "school": "Red Bank Catholic (NJ)",
+    "record": "28-5",
+    "logo": "https://0xc.821.myftpupload.com/wp-content/uploads/2024/11/RedBankLogo.png"
+  },
+  {
+    "rank": 75,
+    "school": "Mallard Creek (NC)",
+    "record": "25-4",
+    "logo": "https://0xc.821.myftpupload.com/wp-content/uploads/2025/04/mallardcreeklogo.png"
+  },
+  {
+    "rank": 76,
+    "school": "St. John Vianney (NJ)",
+    "record": "15-7",
+    "logo": "https://0xc.821.myftpupload.com/wp-content/uploads/2024/12/SJVLogo.jpg"
+  },
+  {
+    "rank": 77,
+    "school": "Edmond Memorial (OK)",
+    "record": "24-5",
+    "logo": "https://0xc.821.myftpupload.com/wp-content/uploads/2024/11/EdmondMemorialLogo.png"
+  },
+  {
+    "rank": 78,
+    "school": "Benet Academy (IL)",
+    "record": "29-3",
+    "logo": "https://0xc.821.myftpupload.com/wp-content/uploads/2025/04/benetgbblogo.jpg"
+  },
+  {
+    "rank": 79,
+    "school": "Pewaukee (WI)",
+    "record": "25-3",
+    "logo": "https://0xc.821.myftpupload.com/wp-content/uploads/2024/11/PewaukeeLogo.png"
+  },
+  {
+    "rank": 80,
+    "school": "Loyola Academy (IL)",
+    "record": "34-4",
+    "logo": "https://0xc.821.myftpupload.com/wp-content/uploads/2024/05/LoyolaAcademyLogo.jpg"
+  },
+  {
+    "rank": 81,
+    "school": "Archbishop Wood (PA)",
+    "record": "22-8",
+    "logo": "https://0xc.821.myftpupload.com/wp-content/uploads/2024/12/AWLogo.png"
+  },
+  {
+    "rank": 82,
+    "school": "Mt. Zion Academy (MD)",
+    "record": "21-8",
+    "logo": "https://0xc.821.myftpupload.com/wp-content/uploads/2024/11/MTZionMDLogo.jpg"
+  },
+  {
+    "rank": 83,
+    "school": "Dr. Phillips (FL)",
+    "record": "20-10",
+    "logo": "https://0xc.821.myftpupload.com/wp-content/uploads/2024/12/DPLogo.jpg"
+  },
+  {
+    "rank": 84,
+    "school": "Cannon (NC)",
+    "record": "26-7",
+    "logo": "https://0xc.821.myftpupload.com/wp-content/uploads/2024/11/CannonLOGO.jpg"
+  },
+  {
+    "rank": 85,
+    "school": "Legacy Early College (SC)",
+    "record": "15-8",
+    "logo": "https://0xc.821.myftpupload.com/wp-content/uploads/2024/11/LegacyCollLogo.png"
+  },
+  {
+    "rank": 86,
+    "school": "Blue Valley North (KS)",
+    "record": "20-4",
+    "logo": "https://0xc.821.myftpupload.com/wp-content/uploads/2024/11/BlueValleyNorthLogo.png"
+  }
+]
