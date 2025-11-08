@@ -4,21 +4,22 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "node --loader ts-node/esm src/index.ts",
-    "build": "tsc",
-    "start": "node dist/index.js",
-    "sync": "node --loader ts-node/esm src/index.ts",
-    "db:setup": "node --loader ts-node/esm scripts/apply-schema.ts",
-    "hs:fetch": "node --loader ts-node/esm src/fetch_hs_rankings.ts",
-    "hs:ingest": "node --loader ts-node/esm src/ingest_hs_rankings.ts",
-    "circuit:ingest": "node --loader ts-node/esm src/ingest_circuit_rankings.ts",
-    "api": "node --loader ts-node/esm src/api.ts",
-    "ingest:all": "node --loader ts-node/esm src/ingest_all.ts",
-    "truncate:all": "node --loader ts-node/esm src/truncate_all.ts",
-    "admin:dev": "npm run dev --prefix admin-panel",
-    "admin:build": "npm run build --prefix admin-panel",
-    "admin:preview": "npm run preview --prefix admin-panel",
+    "server:dev": "npm run dev --prefix server",
+    "server:build": "npm run build --prefix server",
+    "server:start": "npm run start --prefix server",
+
+    "fetcher:dev": "npm run dev --prefix fetcher",
+    "fetcher:build": "npm run build --prefix fetcher",
+    "ingest:all": "npm run ingest:all --prefix fetcher",
+    "truncate:all": "npm run truncate:all --prefix fetcher",
+    "hs:fetch": "npm run hs:fetch --prefix fetcher",
+    "hs:ingest": "npm run hs:ingest --prefix fetcher",
+    "circuit:ingest": "npm run circuit:ingest --prefix fetcher",
+
+    "admin:dev": "npm run dev --prefix admin",
+    "admin:build": "npm run build --prefix admin",
+    "admin:preview": "npm run preview --prefix admin",
+
     "client:dev": "npm run dev --prefix client",
     "client:build": "npm run build --prefix client",
     "client:preview": "npm run preview --prefix client"
@@ -27,27 +28,6 @@
   "author": "",
   "license": "ISC",
   "description": "",
-  "dependencies": {
-    "@supabase/supabase-js": "^2.80.0",
-    "axios": "^1.13.2",
-    "bcryptjs": "^2.4.3",
-    "cheerio": "^1.1.2",
-    "cors": "^2.8.5",
-    "dotenv": "^17.2.3",
-    "express": "^4.19.2",
-    "jsonwebtoken": "^9.0.2",
-    "pg": "^8.16.3",
-    "slugify": "^1.6.6",
-    "swagger-ui-express": "^5.0.1"
-  },
-  "devDependencies": {
-    "@types/bcryptjs": "^2.4.6",
-    "@types/cors": "^2.8.19",
-    "@types/express": "^5.0.5",
-    "@types/jsonwebtoken": "^9.0.10",
-    "@types/node": "^24.10.0",
-    "@types/swagger-ui-express": "^4.1.8",
-    "ts-node": "^10.9.2",
-    "typescript": "^5.9.3"
-  }
+  "dependencies": {},
+  "devDependencies": {}
 }
