@@ -126,3 +126,35 @@ drop trigger if exists set_circuit_teams_updated_at on public.circuit_teams;
 create trigger set_circuit_teams_updated_at
 before update on public.circuit_teams
 for each row execute function public.set_updated_at();
+
+-- Custom auth tables (compatible with future Supabase Auth migration)
+create table if not exists public.app_users (
+  id uuid primary key default gen_random_uuid(),
+  email text not null unique,
+  password_hash text not null,
+  display_name text,
+  role text not null default 'user',
+  is_active boolean not null default true,
+  supabase_user_id uuid,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+create unique index if not exists app_users_email_key on public.app_users (email);
+
+drop trigger if exists set_app_users_updated_at on public.app_users;
+create trigger set_app_users_updated_at
+before update on public.app_users
+for each row execute function public.set_updated_at();
+
+create table if not exists public.app_sessions (
+  id bigserial primary key,
+  jti uuid not null,
+  user_id uuid not null references public.app_users(id) on delete cascade,
+  issued_at timestamptz not null default now(),
+  expires_at timestamptz,
+  revoked boolean not null default false,
+  user_agent text,
+  ip text
+);
+create index if not exists app_sessions_user_id_idx on public.app_sessions (user_id);
+create index if not exists app_sessions_jti_idx on public.app_sessions (jti);

@@ -119,6 +119,34 @@ const openapi = {
     },
   },
   paths: {
+    "/auth/register": {
+      post: {
+        summary: "Register user",
+        requestBody: { required: true, content: { "application/json": { schema: { type: "object", properties: { email: { type: "string" }, password: { type: "string" }, display_name: { type: "string" } }, required: ["email", "password"] } } } },
+        responses: { 200: { description: "OK" }, 400: { description: "Bad request" } }
+      }
+    },
+    "/auth/login": {
+      post: {
+        summary: "Login",
+        requestBody: { required: true, content: { "application/json": { schema: { type: "object", properties: { email: { type: "string" }, password: { type: "string" } }, required: ["email", "password"] } } } },
+        responses: { 200: { description: "OK" }, 401: { description: "Unauthorized" } }
+      }
+    },
+    "/auth/logout": {
+      post: {
+        summary: "Logout (revoke current session)",
+        security: [{ bearerAuth: [] }],
+        responses: { 200: { description: "OK" } }
+      }
+    },
+    "/me": {
+      get: {
+        summary: "Current user",
+        security: [{ bearerAuth: [] }],
+        responses: { 200: { description: "OK" }, 401: { description: "Unauthorized" } }
+      }
+    },
     "/players": {
       get: {
         summary: "List players",
@@ -132,14 +160,12 @@ const openapi = {
           200: { description: "OK", content: { "application/json": { schema: { $ref: "#/components/schemas/PaginatedPlayers" } } } },
         },
       },
-    },
-    "/players": {
       post: {
         summary: "Upsert player (by name)",
         security: [{ bearerAuth: [] }],
         requestBody: { required: true, content: { "application/json": { schema: { $ref: "#/components/schemas/Player" } } } },
         responses: { 200: { description: "OK", content: { "application/json": { schema: { $ref: "#/components/schemas/Player" } } } }, 400: { description: "Bad request" } },
-      },
+      }
     },
     "/players/{id}": {
       get: {
@@ -191,20 +217,56 @@ const openapi = {
 
 import swaggerUi from "swagger-ui-express";
 import jwt from "jsonwebtoken";
+import bcrypt from "bcryptjs";
+import crypto from "node:crypto";
 app.use("/docs", swaggerUi.serve, swaggerUi.setup(openapi as any));
 
 // Auth middleware (JWT bearer)
 const JWT_SECRET = process.env.API_JWT_SECRET || "change-me";
-function requireAuth(req: express.Request, res: express.Response, next: express.NextFunction) {
+const JWT_TTL_SECONDS = parseInt(process.env.API_JWT_TTL_SECONDS || "3600", 10);
+
+async function verifyAndLoadSession(token: string) {
+  const payload = jwt.verify(token, JWT_SECRET) as any;
+  const jti = payload?.jti;
+  if (!jti) throw new Error("Missing jti");
+  const { data, error } = await supabase
+    .from("app_sessions")
+    .select("jti, revoked, expires_at, user_id")
+    .eq("jti", jti)
+    .maybeSingle();
+  if (error) throw new Error(error.message);
+  if (!data || data.revoked) throw new Error("Revoked or missing session");
+  if (data.expires_at && new Date(data.expires_at) < new Date()) throw new Error("Session expired");
+  return payload;
+}
+
+async function requireAuth(req: express.Request, res: express.Response, next: express.NextFunction) {
   try {
     const header = req.headers.authorization || "";
     const m = header.match(/^Bearer\s+(.*)$/i);
     if (!m) return res.status(401).json({ error: "Missing bearer token" });
-    jwt.verify(m[1], JWT_SECRET);
+    const payload = await verifyAndLoadSession(m[1]);
+    (req as any).user = payload;
     return next();
   } catch (e: any) {
     return res.status(401).json({ error: "Invalid token" });
   }
+}
+
+async function issueToken(user: any) {
+  const jti = crypto.randomUUID();
+  const expiresAt = new Date(Date.now() + JWT_TTL_SECONDS * 1000).toISOString();
+  const { error } = await supabase
+    .from("app_sessions")
+    .insert({ jti, user_id: user.id, expires_at: expiresAt, revoked: false })
+    .select("id");
+  if (error) throw new Error(error.message);
+  const token = jwt.sign(
+    { sub: user.id, jti, role: user.role, email: user.email },
+    JWT_SECRET,
+    { expiresIn: JWT_TTL_SECONDS }
+  );
+  return { token, expires_at: expiresAt };
 }
 
 // Simple helpers
@@ -213,6 +275,78 @@ function parseLimitOffset(q: any) {
   const offset = Math.max(parseInt(String(q.offset ?? "0"), 10) || 0, 0);
   return { limit, offset };
 }
+
+// Auth routes
+app.post("/auth/register", async (req, res) => {
+  try {
+    const { email, password, display_name } = req.body || {};
+    if (!email || !password) return res.status(400).json({ error: "email and password required" });
+    const emailNorm = String(email).trim().toLowerCase();
+    const password_hash = await bcrypt.hash(String(password), 10);
+    const { data, error } = await supabase
+      .from("app_users")
+      .insert({ email: emailNorm, password_hash, display_name })
+      .select("id, email, display_name, role, is_active")
+      .single();
+    if (error) return res.status(500).json({ error: error.message });
+    const { token, expires_at } = await issueToken(data);
+    return res.json({ user: data, token, expires_at });
+  } catch (e: any) {
+    return res.status(500).json({ error: e.message });
+  }
+});
+
+app.post("/auth/login", async (req, res) => {
+  try {
+    const { email, password } = req.body || {};
+    if (!email || !password) return res.status(400).json({ error: "email and password required" });
+    const emailNorm = String(email).trim().toLowerCase();
+    const { data: user, error } = await supabase
+      .from("app_users")
+      .select("id, email, display_name, role, is_active, password_hash")
+      .eq("email", emailNorm)
+      .maybeSingle();
+    if (error) return res.status(500).json({ error: error.message });
+    if (!user || !user.is_active) return res.status(401).json({ error: "Invalid credentials" });
+    const ok = await bcrypt.compare(String(password), user.password_hash);
+    if (!ok) return res.status(401).json({ error: "Invalid credentials" });
+    const { token, expires_at } = await issueToken(user);
+    delete (user as any).password_hash;
+    return res.json({ user, token, expires_at });
+  } catch (e: any) {
+    return res.status(500).json({ error: e.message });
+  }
+});
+
+app.post("/auth/logout", requireAuth, async (req, res) => {
+  try {
+    const header = req.headers.authorization as string;
+    const token = header.split(" ")[1];
+    const payload = jwt.decode(token) as any;
+    const jti = payload?.jti;
+    if (jti) {
+      await supabase.from("app_sessions").update({ revoked: true }).eq("jti", jti);
+    }
+    return res.json({ ok: true });
+  } catch (e: any) {
+    return res.status(500).json({ error: e.message });
+  }
+});
+
+app.get("/me", requireAuth, async (req, res) => {
+  try {
+    const userId = (req as any).user?.sub as string;
+    const { data, error } = await supabase
+      .from("app_users")
+      .select("id, email, display_name, role, is_active, created_at, updated_at")
+      .eq("id", userId)
+      .maybeSingle();
+    if (error) return res.status(500).json({ error: error.message });
+    return res.json(data);
+  } catch (e: any) {
+    return res.status(500).json({ error: e.message });
+  }
+});
 
 // GET /players
 app.get("/players", async (req, res) => {
