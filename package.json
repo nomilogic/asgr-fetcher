@@ -13,7 +13,8 @@
     "hs:fetch": "node --loader ts-node/esm src/fetch_hs_rankings.ts",
     "hs:ingest": "node --loader ts-node/esm src/ingest_hs_rankings.ts",
     "circuit:ingest": "node --loader ts-node/esm src/ingest_circuit_rankings.ts",
-    "api": "node --loader ts-node/esm src/api.ts"
+    "api": "node --loader ts-node/esm src/api.ts",
+    "ingest:all": "node --loader ts-node/esm src/ingest_all.ts"
   },
   "keywords": [],
   "author": "",
