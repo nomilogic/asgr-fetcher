@@ -20,7 +20,7 @@ if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
 const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
 
 const SOURCE_URLS = [
-//  "https://0xc.821.myftpupload.com/top-350-for-class-of-2024-2/",
+ "https://0xc.821.myftpupload.com/top-350-for-class-of-2024-2/",
   "https://0xc.821.myftpupload.com/top-350-for-class-of-2025/",
   "https://0xc.821.myftpupload.com/top-350-for-class-of-2026/",
   "https://0xc.821.myftpupload.com/top-350-for-class-of-2027/",
@@ -89,13 +89,45 @@ function parsePlayers(html: string): ParsedData {
     if (dataId) {
       const $detail = $(`.player__rank-table .divTable #document_${dataId}`).closest(".divRow");
       const detailText = $detail.find("p").first().text().trim();
-      const mRating = detailText.match(/rating\s*:\s*(\d{1,3})/i);
+      // Rating patterns: "Rating: 98", "Rating 98", "RATING-98"
+      const mRating = detailText.match(/rating\s*[:\-]?\s*(\d{1,3})/i);
       if (mRating) {
         const r = parseInt(mRating[1], 10);
         if (!Number.isNaN(r) && r >= 0 && r <= 100) rating = r;
       }
-      const mQuote = detailText.match(/"([^"]+)"/);
-      if (mQuote) rating_comment = mQuote[1].trim();
+      // Comment patterns: handle double quotes, smart quotes, single quotes
+      const quoteMatchers = [
+        /“([^”]+)”/,
+        /"([^"]+)"/,
+        /‘([^’]+)’/,
+        /'([^']+)'/,
+      ];
+      for (const rx of quoteMatchers) {
+        const m = detailText.match(rx);
+        if (m && m[1]) { rating_comment = m[1].trim(); break; }
+      }
+      // If there is a single opening quote but no closing pair, take from first quote to end
+      if (!rating_comment) {
+        const firstQuoteIdx = detailText.search(/[“"‘']/);
+        if (firstQuoteIdx !== -1) {
+          const tail = detailText.slice(firstQuoteIdx + 1).trim();
+          rating_comment = tail
+            .replace(/^[“"‘']+/, "")
+            .replace(/[”"’']+$/, "")
+            .trim();
+        }
+      }
+      // Fallback: text after the rating number if no quotes found
+      if (!rating_comment && typeof rating === "number") {
+        const after = detailText.replace(/.*?rating\s*[:\-]?\s*\d{1,3}\s*/i, "").trim();
+        if (after) {
+          rating_comment = after
+            .replace(/^[-–—:\s]+/, "")
+            .replace(/^[“"‘']+/, "")
+            .replace(/[”"’']+$/, "")
+            .trim();
+        }
+      }
     }
 
     if (!nameText) return;
