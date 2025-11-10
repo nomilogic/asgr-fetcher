@@ -355,21 +355,48 @@ app.get("/players", async (req, res) => {
     const season = req.query.season as string | undefined;
     const name = (req.query.name as string | undefined)?.trim();
 
-    let query = supabase.from("players").select("*", { count: "exact" });
+    // If a season was provided, some players may have the season in `grade_year`
+    // while others only have it as a key in the JSONB `ranks` column. PostgREST
+    // filter syntax for JSON operators is fragile inside `.or()`, so perform two
+    // queries and merge results server-side to avoid invalid query strings.
+    if (season) {
+      const seasonInt = parseInt(season, 10);
+      // Query A: grade_year matches
+      let q1 = supabase.from("players").select("*").eq("grade_year", seasonInt);
+      // Query B: ranks JSONB contains the season key (ranks->>'season' IS NOT NULL)
+      let q2 = supabase.from("players").select("*").not("ranks->>'" + season + "'", "is", null);
+      if (name) {
+        q1 = q1.ilike("name", `%${name}%`);
+        q2 = q2.ilike("name", `%${name}%`);
+      }
 
-    if (season && name) {
-      query = query
-        .or(`grade_year.eq.${parseInt(season)},ranks->>'${season}'.not.is.null`)
-        .ilike("name", `%${name}%`);
-    } else if (season) {
-      query = query
-        .or(`grade_year.eq.${parseInt(season)},ranks->>'${season}'.not.is.null`);
-    } else if (name) {
-      query = query.ilike("name", `%${name}%`);
+      const [res1, res2] = await Promise.all([q1, q2]);
+      if (res1.error) {
+        console.error('Query error (grade_year):', res1.error);
+        return res.status(500).json({ error: res1.error.message || 'Query error' });
+      }
+      if (res2.error) {
+        console.error('Query error (ranks):', res2.error);
+        return res.status(500).json({ error: res2.error.message || 'Query error' });
+      }
+
+      const combined = [...(res1.data || []), ...(res2.data || [])];
+      // Deduplicate by id
+      const byId = new Map<number, any>();
+      for (const p of combined) {
+        if (p && typeof p.id === 'number') byId.set(p.id, p);
+      }
+      const unique = Array.from(byId.values()).sort((a, b) => (a.id || 0) - (b.id || 0));
+      const total = unique.length;
+      const page = unique.slice(offset, offset + limit);
+      console.log(`Found ${total} unique players for season ${season}`);
+      return res.json({ data: page, count: total, limit, offset });
     }
 
+    // No season provided: simple single query with optional name filter
+    let query = supabase.from("players").select("*", { count: "exact" });
+    if (name) query = query.ilike("name", `%${name}%`);
     query = query.order("id", { ascending: true }).range(offset, offset + limit - 1);
-
     const { data, error, count } = await query;
     if (error) {
       console.error('Query error:', error);
