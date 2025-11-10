@@ -355,20 +355,29 @@ app.get("/players", async (req, res) => {
     const season = req.query.season as string | undefined;
     const name = (req.query.name as string | undefined)?.trim();
 
-    let query = supabase.from("players").select("*", { count: "exact" }).order("id", { ascending: true }).range(offset, offset + limit - 1);
+    let query = supabase.from("players").select("*", { count: "exact" });
 
-    if (name) {
+    if (season && name) {
+      query = query
+        .or(`grade_year.eq.${parseInt(season)},ranks->>'${season}'.not.is.null`)
+        .ilike("name", `%${name}%`);
+    } else if (season) {
+      query = query
+        .or(`grade_year.eq.${parseInt(season)},ranks->>'${season}'.not.is.null`);
+    } else if (name) {
       query = query.ilike("name", `%${name}%`);
     }
-    if (season) {
-      // filter: ranks->>season is not null
-      query = query.not(`ranks->>${season}`, "is", null as any);
-    }
+
+    query = query.order("id", { ascending: true }).range(offset, offset + limit - 1);
 
     const { data, error, count } = await query;
-    if (error) return res.status(500).json({ error: error.message });
-    return res.json({ data, count, limit, offset });
+    if (error) {
+      console.error('Query error:', error);
+      return res.status(500).json({ error: error ? error.message : "Unknown error" });
+    }
+    return res.json({ data: data || [], count: count || 0, limit, offset });
   } catch (e: any) {
+    console.error('Unexpected error:', e);
     return res.status(500).json({ error: e.message });
   }
 });
